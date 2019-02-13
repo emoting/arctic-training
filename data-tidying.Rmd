@@ -52,7 +52,60 @@ catch_wide <- catch_long %>%
     spread(key = Region, value = catch)
 
 head(catch_wide)
+View(catch_wide)
 
+```
+
+
+## Clean up our data
+
+* rename catch to catch_thousands
+* change catch column to numeric
+* create a new catch column in units num. of fish
+
+```{r}
+
+catch_clean <- catch_long %>%
+    rename(catch_thousands = catch) %>% 
+    mutate(catch_thousands = ifelse(catch_thousands == "I", 1, catch_thousands)) %>% 
+    mutate(catch_thousands = as.numeric(catch_thousands)) %>% 
+    mutate(catch = catch_thousands * 1000) %>% 
+    select(-catch_thousands)
+
+head(catch_clean)
+
+```
+
+
+```{r, eval=FALSE, echo= FALSE}
+# Look for where as.numeric failed
+test <- as.numeric(catch_long$catch)
+i<- which(is.na(test)==TRUE)
+catch_long[i,]
+
+```
+
+## Split - Apply - Combine
+
+* calculate mean catch by species
+
+```{r}
+species_mean <- catch_clean %>%
+        group_by(species) %>%   
+        summarise(catch_mean = mean(catch),
+                  num_obs = n())
+
+head(species_mean)
+```
+
+```{r}
+year_mean <- catch_clean %>%
+        group_by(Year) %>%   
+        summarise(catch_mean = mean(catch)) %>% 
+        arrange(-catch_mean) %>% 
+        filter(Year >= 1990)
+
+year_mean
 ```
 
 
