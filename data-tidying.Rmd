@@ -112,4 +112,47 @@ year_mean
 
 # Join the Region Definitions
 
+
+```{r}
+region_defs <- read.csv(url("https://knb.ecoinformatics.org/knb/d1/mn/v2/object/df35b.303.1", method = "libcurl"), stringsAsFactors = FALSE) %>% 
+    select(code, mgmtArea)
+
+head(region_defs)
+```
+
+
+```{r}
+catch_joined <- left_join(catch_clean, region_defs, by = c("Region" = "code"))
+
+head(catch_joined)
+
+```
+
+
 # Misc. Functions
+
+Separate and unite
+
+```{r}
+dates_df <- data.frame(date = c("5/24/1930",
+                                "5/25/1930",
+                                "5/26/1930",
+                                "5/27/1930",
+                                "5/28/1930"),
+                       stringsAsFactors = FALSE)
+
+dates_split <- dates_df %>% 
+            separate(date, c("month", "day", "year"), "/", remove=F)
+
+head(dates_split)
+
+```
+
+
+```{r}
+dates_unite <- dates_split %>% 
+            unite(col = date_iso, year, month, day, sep = "-")
+head(dates_unite)
+
+```
+

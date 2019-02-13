@@ -317,9 +317,57 @@ year_mean</code></pre>
 </div>
 <div id="join-the-region-definitions" class="section level1">
 <h1>Join the Region Definitions</h1>
+<pre class="r"><code>region_defs &lt;- read.csv(url(&quot;https://knb.ecoinformatics.org/knb/d1/mn/v2/object/df35b.303.1&quot;, method = &quot;libcurl&quot;), stringsAsFactors = FALSE) %&gt;% 
+    select(code, mgmtArea)
+
+head(region_defs)</code></pre>
+<pre><code>##      code                                  mgmtArea
+## 1     GSE              Unallocated Southeast Alaska
+## 2     NSE                 Northern Southeast Alaska
+## 3     SSE                 Southern Southeast Alaska
+## 4     YAK                                   Yakutat
+## 5 PWSmgmt      Prince William Sound Management Area
+## 6     BER Bering River Subarea Copper River Subarea</code></pre>
+<pre class="r"><code>catch_joined &lt;- left_join(catch_clean, region_defs, by = c(&quot;Region&quot; = &quot;code&quot;))
+
+head(catch_joined)</code></pre>
+<pre><code>##   Region Year species catch                  mgmtArea
+## 1    SSE 1886 Chinook     0 Southern Southeast Alaska
+## 2    SSE 1887 Chinook     0 Southern Southeast Alaska
+## 3    SSE 1888 Chinook     0 Southern Southeast Alaska
+## 4    SSE 1889 Chinook     0 Southern Southeast Alaska
+## 5    SSE 1890 Chinook     0 Southern Southeast Alaska
+## 6    SSE 1891 Chinook     0 Southern Southeast Alaska</code></pre>
 </div>
 <div id="misc.-functions" class="section level1">
 <h1>Misc. Functions</h1>
+<p>Separate and unite</p>
+<pre class="r"><code>dates_df &lt;- data.frame(date = c(&quot;5/24/1930&quot;,
+                                &quot;5/25/1930&quot;,
+                                &quot;5/26/1930&quot;,
+                                &quot;5/27/1930&quot;,
+                                &quot;5/28/1930&quot;),
+                       stringsAsFactors = FALSE)
+
+dates_split &lt;- dates_df %&gt;% 
+            separate(date, c(&quot;month&quot;, &quot;day&quot;, &quot;year&quot;), &quot;/&quot;, remove=F)
+
+head(dates_split)</code></pre>
+<pre><code>##        date month day year
+## 1 5/24/1930     5  24 1930
+## 2 5/25/1930     5  25 1930
+## 3 5/26/1930     5  26 1930
+## 4 5/27/1930     5  27 1930
+## 5 5/28/1930     5  28 1930</code></pre>
+<pre class="r"><code>dates_unite &lt;- dates_split %&gt;% 
+            unite(col = date_iso, year, month, day, sep = &quot;-&quot;)
+head(dates_unite)</code></pre>
+<pre><code>##        date  date_iso
+## 1 5/24/1930 1930-5-24
+## 2 5/25/1930 1930-5-25
+## 3 5/26/1930 1930-5-26
+## 4 5/27/1930 1930-5-27
+## 5 5/28/1930 1930-5-28</code></pre>
 </div>
 
 
