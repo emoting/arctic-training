@@ -12,6 +12,8 @@ This change is made under new branch (new_work).
 
 Change 2: this is for new branch.
 
+Change 3: this is the 3rd change for new branch.
+
 And more changes.
 
 Change1.
