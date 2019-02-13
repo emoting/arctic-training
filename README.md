@@ -8,6 +8,8 @@ Hands on materials for the Arctic Data Training Workshop
 
 Made some changes from RStudio.
 
+This change is made under new branch (new_work).
+
 And more changes.
 
 Change1.
