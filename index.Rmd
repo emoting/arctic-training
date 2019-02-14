@@ -12,11 +12,15 @@ library(dplyr)
 library(tidyr)
 library(ggplot2)
 library(scales)
+library(leaflet)
+library(DT)
 
 # to call stats filter- stats::filter()
 ```
 
 # Reformat the data for plotting
+
+For dyplr/tidyr reference see my [data tidying page](data-tidying.html)
 
 Alaska Department of Fish and Game, Division of Commercial Fisheries. 2017. Daily salmon escapement counts from the OceanAK database, Alaska, 1921-2017. Knowledge Network for Biocomplexity. doi:10.5063/F1S46Q6M.
 
@@ -53,6 +57,7 @@ ggplot(annual_esc, mapping = aes(x = Species, y=count, fill=SASAP.Region)) + geo
 
 ```
 
+
 ```{r}
 my_theme <- theme_test() + 
     theme(legend.position = "bottom", legend.title =  element_blank(),
@@ -71,6 +76,7 @@ ggplot(filter(annual_esc, SASAP.Region == "Kodiak"), aes(x = year, y = count, co
 
 
 ```
+
 
 ```{r, fig.width= 7, fig.height=8}
 p <- ggplot(annual_esc, aes(x = year, y = count, color = Species))+
@@ -92,3 +98,24 @@ ggsave("figures/regional_escapement.png",
 
 
 # Generate an interactive map
+
+Map the sampling locatiosn for escapement
+
+* find distinct lat/lon/location combinations
+
+```{r}
+locations <- esc %>% 
+    distinct(Location, Latitude, Longitude) %>% 
+    drop_na()
+```
+
+```{r, eco = F}
+datatable(locations)
+```
+
+```{r}
+leaflet(locations) %>%
+    addTiles() %>%
+    addMarkers(lng = ~Longitude, lat = ~Latitude, popup = ~Location)
+```
+
