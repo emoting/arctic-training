@@ -11,6 +11,7 @@ knitr::opts_chunk$set(echo = TRUE)
 library(dplyr)
 library(tidyr)
 library(ggplot2)
+library(scales)
 
 # to call stats filter- stats::filter()
 ```
@@ -53,8 +54,9 @@ ggplot(annual_esc, mapping = aes(x = Species, y=count, fill=SASAP.Region)) + geo
 ```
 
 ```{r}
-my_them <- theme_test() + 
-    theme(legend.position = "bottom", legend.title =  element_blank())
+my_theme <- theme_test() + 
+    theme(legend.position = "bottom", legend.title =  element_blank(),
+          plot.title = element_text(hjust = 0.5))
 ```
 
 
@@ -65,7 +67,25 @@ ggplot(filter(annual_esc, SASAP.Region == "Kodiak"), aes(x = year, y = count, co
     ylab("Escapement (num of fish)") + 
     xlab("Year") + 
     ggtitle("Kodiak Salmon Escapement")
+    my_theme
 
+
+```
+
+```{r, fig.width= 7, fig.height=8}
+p <- ggplot(annual_esc, aes(x = year, y = count, color = Species))+
+    geom_line()+
+    geom_point()+
+    scale_y_continuous(label=comma)+
+    facet_wrap(~SASAP.Region, scales = "free_y", ncol=2)+
+    my_theme
+
+p
+ggsave("figures/regional_escapement.png",
+       plot=p,
+       width=7,
+       height=8,
+       units="in")
 
 ```
 
