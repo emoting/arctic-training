@@ -1,5 +1,5 @@
 ---
-title: "index"
+title: "Data Visualization"
 output: html_document
 ---
 
@@ -7,4 +7,68 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-Hello world
+```{r}
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+
+# to call stats filter- stats::filter()
+```
+
+# Reformat the data for plotting
+
+Alaska Department of Fish and Game, Division of Commercial Fisheries. 2017. Daily salmon escapement counts from the OceanAK database, Alaska, 1921-2017. Knowledge Network for Biocomplexity. doi:10.5063/F1S46Q6M.
+
+
+```{r}
+esc <- read.csv(url("https://knb.ecoinformatics.org/knb/d1/mn/v2/object/urn%3Auuid%3Af119a05b-bbe7-4aea-93c6-85434dcb1c5e", method = "libcurl"), stringsAsFactors = F)
+```
+
+* calculate annual escapment by species and region
+* filter for just pacific salmon (Sockeye, Chinook, Coho, Pink, Chum)
+
+annual_esc
+
+```{r}
+esc_split <- esc %>% 
+            separate(sampleDate, c("year", "month", "day"), "-", remove=F)
+
+annual_esc <- esc_split %>%
+        mutate(year = as.numeric(year)) %>% 
+        group_by(SASAP.Region, Species, year) %>%   
+        summarise(count = sum(DailyCount)) %>% 
+        filter(Species %in% c("Sockeye", "Chinook", "Coho", "Pink", "Chum"))
+
+```
+
+
+
+# Generate some static plots
+
+```{r}
+ggplot(annual_esc, mapping = aes(x = Species, y=count)) + geom_col(fill="blue")
+
+ggplot(annual_esc, mapping = aes(x = Species, y=count, fill=SASAP.Region)) + geom_col()
+
+```
+
+```{r}
+my_them <- theme_test() + 
+    theme(legend.position = "bottom", legend.title =  element_blank())
+```
+
+
+```{r}
+ggplot(filter(annual_esc, SASAP.Region == "Kodiak"), aes(x = year, y = count, color = Species)) + 
+    geom_line() + 
+    geom_point() + 
+    ylab("Escapement (num of fish)") + 
+    xlab("Year") + 
+    ggtitle("Kodiak Salmon Escapement")
+
+
+```
+
+
+
+# Generate an interactive map
